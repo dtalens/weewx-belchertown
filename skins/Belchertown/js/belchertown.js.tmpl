@@ -1137,7 +1137,11 @@ function update_forecast_data(data) {
         var forecast_subtitle = tzAdjustedMoment(data["timestamp"]).format('$obs.label.time_forecast_last_updated');
 
         try {
-            var wxicon = get_relative_url() + "/images/" + aeris_icon(data["current"][0]["response"]["ob"]["icon"]) + ".png";
+            if ("$Extras.forecast_aeris_use_conditions" == '1') {
+                var wxicon = get_relative_url() + "/images/" + aeris_icon(data["current"][0]["response"][0]["periods"][0]["icon"]) + ".png";
+            } else  {
+                var wxicon = get_relative_url() + "/images/" + aeris_icon(data["current"][0]["response"]["ob"]["icon"]) + ".png";
+            }
         } catch (err) {
             // Returned "current" data does not have this value
         }
@@ -1177,8 +1181,16 @@ function update_forecast_data(data) {
             if (("$Extras.forecast_units" == "si") || ("$Extras.forecast_units" == "ca")) {
                 // si and ca = kilometer
                 visibility = data["current"][0]["response"]["ob"]["visibilityKM"];
-
-            } else {
+            } 
+            else if (("$Extras.forecast_units" == "si") || ("$Extras.forecast_units" == "ca") && ("$Extras.forecast_aeris_use_conditions" == '1')) {
+                // si and ca = kilometer
+                visibility = data["current"][0]["response"][0]["periods"][0]["visibilityKM"];
+            } 
+            else if ("$Extras.forecast_aeris_use_conditions" == '1') {
+                // us and uk2 and default = miles
+                visibility = data["current"][0]["response"][0]["periods"][0]["visibilityMI"];
+            }    
+            else {
                 // us and uk2 and default = miles
                 visibility = data["current"][0]["response"]["ob"]["visibilityMI"];
             }
