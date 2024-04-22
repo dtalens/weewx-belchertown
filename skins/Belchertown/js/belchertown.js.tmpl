@@ -1164,7 +1164,7 @@ function update_forecast_data(data) {
         var forecast_subtitle = tzAdjustedMoment(data["timestamp"]).format('$obs.label.time_forecast_last_updated');
 
         try {
-            var wxicon = get_relative_url() + "/images/" + aeris_icon(data["current"][0]["response"][0]["periods"][0]["icon"]) + ".png";
+            var wxicon = get_relative_url() + "/images/" + aeris_icon(data["current"][0]["response"][0]["periods"][0]["icon"]) + ".svg";
         } catch (err) {
             // Returned "current" data does not have this value
         }
@@ -1232,11 +1232,11 @@ function update_forecast_data(data) {
 
                 //  for 24hr interval add 7200 (2 hours) to the epoch to get an hour well into the day to avoid any DST issues. This way it'll either be 1am or 2am. Without it, we get 12am or 11pm (the previous day).
                 if (forecast_interval == "forecast_24hr") {
-                    var image_url = get_relative_url() + "/images/" + aeris_icon(data[(forecast_interval)][0]["response"][0]["periods"][i]["icon"]) + ".png";
+                    var image_url = get_relative_url() + "/images/" + aeris_icon(data[(forecast_interval)][0]["response"][0]["periods"][i]["icon"]) + ".svg";
                     var condition_text = aeris_coded_weather(data[(forecast_interval)][0]["response"][0]["periods"][i]["weatherPrimaryCoded"], false);
                     var weekday = tzAdjustedMoment(data[(forecast_interval)][0]["response"][0]["periods"][i]["timestamp"] + 7200).format("$obs.label.time_forecast_date");
                 } else {
-                    var image_url = get_relative_url() + "/images/" + aeris_icon(data[(forecast_interval)][0]["response"][0]["periods"][i]["icon"]) + ".png";
+                    var image_url = get_relative_url() + "/images/" + aeris_icon(data[(forecast_interval)][0]["response"][0]["periods"][i]["icon"]) + ".svg";
                     var condition_text = aeris_coded_weather(data[(forecast_interval)][0]["response"][0]["periods"][i]["weatherPrimaryCoded"], false);
                     var weekday = tzAdjustedMoment(data[(forecast_interval)][0]["response"][0]["periods"][i]["timestamp"]).format("$obs.label.time_forecast_time");
                 }
