@@ -2384,6 +2384,55 @@ function showChart(json_file, prepend_renderTo = false) {
 
                 belchertown_debug(options.chart.renderTo + ": " + s.obsType + " is on yAxis " + this_yAxis);
 
+                // yAxis AQI PlotLines
+                if (s.obsType == "pm2_5") {
+                    belchertown_debug('yAxis plotLines true');
+
+                    var yAxis_plotlines = [];
+
+                    // PM25 EAQI (European Air Quality Index) levels, labels and belchertown's colors
+                    // https://airindex.eea.europa.eu/AQI/index.html
+                    const eaqi = [{
+                        color: "#71bc3c",
+                        label: "Bona",
+                        level: 10
+                    }, {
+                        color: "rgba(255,174,0,0.9)",
+                        label: "Raonablement bona",
+                        level: 20
+                    }, {
+                        color: "rgba(255,127,0,1)",
+                        label: "Regular",
+                        level: 25
+                    }, {
+                        color: "rgba(255,69,69,1)",
+                        label: "Desfavorable",
+                        level: 50
+                    }, {
+                        color: "#b16286",
+                        label: "Molt desfavorable",
+                        level: 75
+                    }];
+
+                    for (i = 0; i < eaqi.length; i++) {
+                        yAxis_plotlines.push({
+                            color: eaqi[i].color,
+                            value: eaqi[i].level,
+                            label: {
+                                text: eaqi[i].label,
+                                x: 0,
+                                y: 15,
+                                style: {
+                                    color: eaqi[i].color,
+                                    fontWeight: 'bold'
+                                }
+                            },
+                            width: 3,
+                            dashStyle: 'longdashdot',
+                            zIndex : 3
+                        });
+                    }
+
                 // Some charts may require a defined min/max on the yAxis
                 options.yAxis[this_yAxis].min = s.yAxis_min !== "undefined" ? s.yAxis_min : null;
                 options.yAxis[this_yAxis].max = s.yAxis_max !== "undefined" ? s.yAxis_max : null;
