@@ -833,16 +833,17 @@ function aeris_coded_weather(data, full_observation = false) {
     if (cloud_dict.hasOwnProperty(weather_code)) {
         return cloud_dict[weather_code];
     } else {
+        // Weather output. Change order for latin languages
+        output += weather_dict[weather_code] + " ";
+
         // Add the coverage if it's present, and full observation forecast is requested
         if ((coverage_code) && (full_observation)) {
-            output += coverage_dict[coverage_code] + " ";
+            output += " " + coverage_dict[coverage_code];
         }
         // Add the intensity if it's present
         if (intensity_code) {
-            output += intensity_dict[intensity_code] + " ";
+            output += " " + intensity_dict[intensity_code];
         }
-        // Weather output
-        output += weather_dict[weather_code];
     }
 
     return output;

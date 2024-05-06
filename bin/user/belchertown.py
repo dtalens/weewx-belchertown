@@ -1150,16 +1150,15 @@ class getData(SearchList):
                 # if it's there. If not then it's a combined weather code.
                 if weather_code in cloud_dict:
                     return cloud_dict[weather_code]
-
+                # Weather output. Change order for latin languages
+                output += weather_dict[weather_code]
                 # Add the coverage if it's present, and full observation
                 # forecast is requested
                 if coverage_code:
-                    output += coverage_dict[coverage_code] + " "
+                    output += " " + coverage_dict[coverage_code]
                 # Add the intensity if it's present
                 if intensity_code:
-                    output += intensity_dict[intensity_code] + " "
-                # Weather output
-                output += weather_dict[weather_code]
+                    output += " " + intensity_dict[intensity_code]
                 return output
 
             def aeris_icon(data):
