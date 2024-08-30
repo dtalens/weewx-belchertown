@@ -1170,7 +1170,7 @@ class getData(SearchList):
                     "images/aeris-icon-list.json",
                 )
                 if os.path.exists(iconlist_file_path):
-                    icon_name = data.split(".")[0]  # Remove .png
+                    icon_name = data.split(".")[0]  # Remove .svg
                     with open(iconlist_file_path, "r") as dict:
                         icon_dict = json.load(dict)
                     return icon_dict[icon_name]
@@ -1465,7 +1465,7 @@ class getData(SearchList):
                     data["current"][0]["response"][0]["periods"][0]["weatherPrimaryCoded"]
                 )
                 current_obs_icon = (
-                    aeris_icon(data["current"][0]["response"][0]["periods"][0]["icon"]) + ".png"
+                    aeris_icon(data["current"][0]["response"][0]["periods"][0]["icon"]) + ".svg"
                 )
 
                 if forecast_units in ("si", "ca"):
@@ -1480,7 +1480,7 @@ class getData(SearchList):
                 else:
                     # us, uk2 and default to miles per hour
                     if data["current"][0]["response"][0]["periods"][0]["visibilityMI"] is not None:
-                        visibility = locale.format(
+                        visibility = locale.format_string(
                             "%g",
                             float(data["current"][0]["response"][0]["periods"][0]["visibilityMI"]),
                         )
