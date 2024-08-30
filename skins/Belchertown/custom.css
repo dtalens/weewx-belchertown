@@ -1,0 +1,18 @@
+#wxicon {
+    display: block;
+    margin: 0 auto;
+    max-height: 101px;
+}
+
+.forecast-1hour img {
+    max-height: 48px;
+}
+
+.forecast-3hour img {
+    max-height: 97px;
+}
+
+.forecast-24hour img {
+    max-height: 101px;
+}
+

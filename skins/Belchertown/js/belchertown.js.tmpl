@@ -833,16 +833,17 @@ function aeris_coded_weather(data, full_observation = false) {
     if (cloud_dict.hasOwnProperty(weather_code)) {
         return cloud_dict[weather_code];
     } else {
+        // Weather output. Change order for latin languages
+        output += weather_dict[weather_code] + " ";
+
         // Add the coverage if it's present, and full observation forecast is requested
         if ((coverage_code) && (full_observation)) {
-            output += coverage_dict[coverage_code] + " ";
+            output += " " + coverage_dict[coverage_code];
         }
         // Add the intensity if it's present
         if (intensity_code) {
-            output += intensity_dict[intensity_code] + " ";
+            output += " " + intensity_dict[intensity_code];
         }
-        // Weather output
-        output += weather_dict[weather_code];
     }
 
     return output;
@@ -1164,14 +1165,14 @@ function update_forecast_data(data) {
         var forecast_subtitle = tzAdjustedMoment(data["timestamp"]).format('$obs.label.time_forecast_last_updated');
 
         try {
-            var wxicon = get_relative_url() + "/images/" + aeris_icon(data["current"][0]["response"]["ob"]["icon"]) + ".png";
+            var wxicon = get_relative_url() + "/images/" + aeris_icon(data["current"][0]["response"][0]["periods"][0]["icon"]) + ".svg";
         } catch (err) {
             // Returned "current" data does not have this value
         }
         
         // Current observation text
         try {
-            jQuery(".current-obs-text").html(aeris_coded_weather(data["current"][0]["response"]["ob"]["weatherPrimaryCoded"], true));
+            jQuery(".current-obs-text").html(aeris_coded_weather(data["current"][0]["response"][0]["periods"][0]["weatherPrimaryCoded"], true));
         } catch (err) {
             // Returned "current" data does not have this value
         }
@@ -1203,11 +1204,11 @@ function update_forecast_data(data) {
         try {
             if (("$Extras.forecast_units" == "si") || ("$Extras.forecast_units" == "ca")) {
                 // si and ca = kilometer
-                visibility = data["current"][0]["response"]["ob"]["visibilityKM"];
+                visibility = data["current"][0]["response"][0]["periods"][0]["visibilityKM"];
 
             } else {
                 // us and uk2 and default = miles
-                visibility = data["current"][0]["response"]["ob"]["visibilityMI"];
+                visibility = data["current"][0]["response"][0]["periods"][0]["visibilityMI"];
             }
         } catch (err) {
             // Returned "current" data does not have this value
@@ -1232,11 +1233,11 @@ function update_forecast_data(data) {
 
                 //  for 24hr interval add 7200 (2 hours) to the epoch to get an hour well into the day to avoid any DST issues. This way it'll either be 1am or 2am. Without it, we get 12am or 11pm (the previous day).
                 if (forecast_interval == "forecast_24hr") {
-                    var image_url = get_relative_url() + "/images/" + aeris_icon(data[(forecast_interval)][0]["response"][0]["periods"][i]["icon"]) + ".png";
+                    var image_url = get_relative_url() + "/images/" + aeris_icon(data[(forecast_interval)][0]["response"][0]["periods"][i]["icon"]) + ".svg";
                     var condition_text = aeris_coded_weather(data[(forecast_interval)][0]["response"][0]["periods"][i]["weatherPrimaryCoded"], false);
                     var weekday = tzAdjustedMoment(data[(forecast_interval)][0]["response"][0]["periods"][i]["timestamp"] + 7200).format("$obs.label.time_forecast_date");
                 } else {
-                    var image_url = get_relative_url() + "/images/" + aeris_icon(data[(forecast_interval)][0]["response"][0]["periods"][i]["icon"]) + ".png";
+                    var image_url = get_relative_url() + "/images/" + aeris_icon(data[(forecast_interval)][0]["response"][0]["periods"][i]["icon"]) + ".svg";
                     var condition_text = aeris_coded_weather(data[(forecast_interval)][0]["response"][0]["periods"][i]["weatherPrimaryCoded"], false);
                     var weekday = tzAdjustedMoment(data[(forecast_interval)][0]["response"][0]["periods"][i]["timestamp"]).format("$obs.label.time_forecast_time");
                 }
@@ -2383,6 +2384,55 @@ function showChart(json_file, prepend_renderTo = false) {
                 this_yAxis = s.yAxis;
 
                 belchertown_debug(options.chart.renderTo + ": " + s.obsType + " is on yAxis " + this_yAxis);
+
+                // yAxis AQI PlotLines
+                if (s.obsType == "pm2_5") {
+                    belchertown_debug('yAxis plotLines true');
+
+                    var yAxis_plotlines = [];
+
+                    // PM25 EAQI (European Air Quality Index) levels, labels and belchertown's colors
+                    // https://airindex.eea.europa.eu/AQI/index.html
+                    const eaqi = [{
+                        color: "#71bc3c",
+                        label: "Bona",
+                        level: 10
+                    }, {
+                        color: "rgba(255,174,0,0.9)",
+                        label: "Raonablement bona",
+                        level: 20
+                    }, {
+                        color: "rgba(255,127,0,1)",
+                        label: "Regular",
+                        level: 25
+                    }, {
+                        color: "rgba(255,69,69,1)",
+                        label: "Desfavorable",
+                        level: 50
+                    }, {
+                        color: "#b16286",
+                        label: "Molt desfavorable",
+                        level: 75
+                    }];
+
+                    for (i = 0; i < eaqi.length; i++) {
+                        yAxis_plotlines.push({
+                            color: eaqi[i].color,
+                            value: eaqi[i].level,
+                            label: {
+                                text: eaqi[i].label,
+                                x: 0,
+                                y: 15,
+                                style: {
+                                    color: eaqi[i].color,
+                                    fontWeight: 'bold'
+                                }
+                            },
+                            width: 3,
+                            dashStyle: 'longdashdot',
+                            zIndex : 3
+                        });
+                    }
 
                 // Some charts may require a defined min/max on the yAxis
                 options.yAxis[this_yAxis].min = s.yAxis_min !== "undefined" ? s.yAxis_min : null;
